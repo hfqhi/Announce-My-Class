@@ -17,6 +17,13 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // --- OUR NEW SAAS COLUMNS ---
+            $table->string('class_code')->unique()->nullable();
+            $table->string('display_name')->nullable();
+            $table->string('role')->default('admin');
+            // ----------------------------
+
             $table->rememberToken();
             $table->timestamps();
         });
