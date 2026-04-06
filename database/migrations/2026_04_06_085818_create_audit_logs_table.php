@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
+            // The SaaS Link:
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+
+            $table->string('action'); // e.g., "Created Announcement"
+            $table->text('description')->nullable();
+
             $table->timestamps();
         });
     }
