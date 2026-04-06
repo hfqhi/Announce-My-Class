@@ -28,4 +28,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\AnnouncementController;
+
+// --- ADMIN DASHBOARD ROUTES (Protected by Auth) ---
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    // This single line creates all 7 standard CRUD routes for Subjects!
+    Route::resource('subjects', SubjectController::class);
+
+    // This creates all 7 standard CRUD routes for Announcements!
+    Route::resource('announcements', AnnouncementController::class);
+});
+require __DIR__ . '/auth.php';
