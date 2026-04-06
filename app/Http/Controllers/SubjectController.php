@@ -2,63 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subject;
 use Illuminate\Http\Request;
 
 class SubjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        // SAAS SECURITY: Fetch ONLY the subjects belonging to the logged-in user
+        $subjects = Subject::where('user_id', auth()->id())->latest()->get();
+
+        // We will build this view in Phase 4!
+        return view('subjects.index', compact('subjects'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
-    }
+        // 1. Validate the incoming form data
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'nullable|string|max:50',
+            'schedule_time' => 'nullable|string',
+            'schedule_days' => 'nullable|string',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        // 2. The Regex Parser (Translated from your Vanilla PHP)
+        // Let's clean up the schedule time formatting.
+        // Example: Changes "10:00 AM   -  11:30 AM" into a clean "10:00 AM - 11:30 AM"
+        if (isset($validated['schedule_time'])) {
+            $validated['schedule_time'] = preg_replace('/\s*-\s*/', ' - ', $validated['schedule_time']);
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        // 3. SAAS MAGIC: Automatically attach this new subject to the logged-in admin!
+        $validated['user_id'] = auth()->id();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        // 4. Save to the database
+        Subject::create($validated);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('subjects.index')->with('success', 'Subject created successfully!');
     }
 }
