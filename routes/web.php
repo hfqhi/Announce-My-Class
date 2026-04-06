@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicBoardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,6 +18,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// --- PUBLIC ROUTES (No login required) ---
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+Route::post('/board/lookup', [PublicBoardController::class, 'lookup'])->name('board.lookup');
+Route::get('/board/{class_code}', [PublicBoardController::class, 'show'])->name('board.show');
+
+// ... (Your admin dashboard routes should still be below this) ...
 
 Route::get('/dashboard', function () {
     return view('dashboard');
